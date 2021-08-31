@@ -1,0 +1,3 @@
+[workspace]
+members = ["scrape_url"]
+default-members = ["scrape_url"]
