@@ -1,10 +1,12 @@
 use base64::{decode_config, encode_config, URL_SAFE_NO_PAD};
-use photon_rs::transform::SamplingFilter;
+use photon_rs::{PhotonImage, transform::SamplingFilter};
 use prost::Message;
 use std::convert::TryFrom;
 
 mod abi;
 pub use abi::*;
+
+use self::spec::Data;
 
 impl ImageSpec {
     pub fn new(specs: Vec<Spec>) -> Self {
@@ -91,6 +93,12 @@ impl Spec {
     pub fn new_watermark(x: u32, y: u32) -> Self {
         Self {
             data: Some(spec::Data::Watermark(Watermark { x, y })),
+        }
+    }
+
+    pub fn new_box_blur() -> Self {
+        Self {
+            data: Some(spec::Data::BoxBlur(BoxBlur { })),
         }
     }
 }

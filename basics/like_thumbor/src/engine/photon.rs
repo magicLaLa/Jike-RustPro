@@ -6,7 +6,7 @@ use bytes::Bytes;
 use image::{DynamicImage, ImageBuffer, ImageOutputFormat};
 use lazy_static::lazy_static;
 use photon_rs::{
-    effects, filters, multiple, native::open_image_from_bytes, transform, PhotonImage,
+    effects, filters, multiple, native::open_image_from_bytes, transform, PhotonImage, conv::box_blur,
 };
 use std::convert::TryFrom;
 
@@ -44,6 +44,7 @@ impl Engine for Photon {
                 Some(spec::Data::Flipv(ref v)) => self.transform(v),
                 Some(spec::Data::Resize(ref v)) => self.transform(v),
                 Some(spec::Data::Watermark(ref v)) => self.transform(v),
+                Some(spec::Data::BoxBlur(ref v)) => self.transform(v),
                 // 对于目前不认识的 spec，不做任何处理
                 _ => {}
             }
@@ -52,6 +53,12 @@ impl Engine for Photon {
 
     fn generate(self, format: ImageOutputFormat) -> Vec<u8> {
         image_to_buf(self.0, format)
+    }
+}
+
+impl SpecTransform<&BoxBlur> for Photon {
+    fn transform(&mut self, _: &BoxBlur) {
+        box_blur(&mut self.0);
     }
 }
 

@@ -62,6 +62,9 @@ message Watermark {
   uint32 y = 2;
 }
 
+// 模糊处理
+message BoxBlur {}
+
 // 一个 spec 可以包含上述的处理方式之一
 message Spec {
   oneof data {
@@ -72,5 +75,6 @@ message Spec {
     Contrast contrast = 5;
     Filter filter = 6;
     Watermark watermark = 7;
+    BoxBlur boxBlur = 8;
   }
 }
