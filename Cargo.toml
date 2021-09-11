@@ -1,3 +1,10 @@
 [workspace]
-members = ["basics/scrape_url", "basics/httpie", "basics/like_thumbor"]
-default-members = ["basics/like_thumbor"]
+members = [
+  "basics/scrape_url",
+  "basics/httpie",
+  "basics/like_thumbor",
+  "basics/queryer",
+  "basics/queryer_py",
+  "basics/queryer_js"
+]
+default-members = ["basics/queryer_js"]

@@ -52,6 +52,7 @@ impl Engine for Photon {
     }
 
     fn generate(self, format: ImageOutputFormat) -> Vec<u8> {
+        // self.0 是获取 第一个参数
         image_to_buf(self.0, format)
     }
 }
