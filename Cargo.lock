@@ -221,6 +221,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "borrow"
+version = "0.1.0"
+
+[[package]]
 name = "brotli"
 version = "3.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1338,6 +1342,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "multi_owner"
+version = "0.1.0"
+
+[[package]]
 name = "multimap"
 version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1668,6 +1676,10 @@ checksum = "9f923fb806c46266c02ab4a5b239735c144bdeda724a50ed058e5226f594cde3"
 dependencies = [
  "ttf-parser",
 ]
+
+[[package]]
+name = "ownership"
+version = "0.1.0"
 
 [[package]]
 name = "palette"

@@ -5,6 +5,9 @@ members = [
   "basics/like_thumbor",
   "basics/queryer",
   "basics/queryer_py",
-  "basics/queryer_js"
+  "basics/queryer_js",
+  "basics/07_ownership",
+  "basics/08_borrow",
+  "basics/09_multi_owner",
 ]
-default-members = ["basics/queryer_js"]
+default-members = ["basics/09_multi_owner"]

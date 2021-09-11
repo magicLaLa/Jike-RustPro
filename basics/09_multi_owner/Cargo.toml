@@ -1,0 +1,28 @@
+[package]
+name = "multi_owner"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[[bin]]
+name = "multi_owner_1"
+path = "./src/multi_owner_1.rs"
+
+[[bin]]
+name = "multi_owner_2"
+path = "./src/multi_owner_2.rs"
+
+[[bin]]
+name = "multi_owner_3"
+path = "./src/multi_owner_3.rs"
+
+[[bin]]
+name = "multi_owner_4"
+path = "./src/multi_owner_4.rs"
+
+[[bin]]
+name = "multi_owner_5"
+path = "./src/multi_owner_5.rs"
