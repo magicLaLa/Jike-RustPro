@@ -1149,6 +1149,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "lifetime"
+version = "0.1.0"
+
+[[package]]
 name = "like_thumbor"
 version = "0.1.0"
 dependencies = [

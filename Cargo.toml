@@ -9,5 +9,6 @@ members = [
   "basics/07_ownership",
   "basics/08_borrow",
   "basics/09_multi_owner",
+  "basics/10_lifetime"
 ]
-default-members = ["basics/09_multi_owner"]
+default-members = ["basics/10_lifetime"]
