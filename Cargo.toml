@@ -9,6 +9,7 @@ members = [
   "basics/07_ownership",
   "basics/08_borrow",
   "basics/09_multi_owner",
-  "basics/10_lifetime"
+  "basics/10_lifetime",
+  "basics/11_memory"
 ]
-default-members = ["basics/10_lifetime"]
+default-members = ["basics/11_memory"]
