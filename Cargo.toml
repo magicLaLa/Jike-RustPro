@@ -11,6 +11,7 @@ members = [
   "basics/09_multi_owner",
   "basics/10_lifetime",
   "basics/11_memory",
-  "basics/12_types"
+  "basics/12_types",
+  "basics/13_types"
 ]
-default-members = ["basics/12_types"]
+default-members = ["basics/13_types"]

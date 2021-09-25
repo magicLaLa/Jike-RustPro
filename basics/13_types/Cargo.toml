@@ -1,0 +1,37 @@
+[package]
+name = "types_03"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+regex = { version = "1.5", default-features = false, features = ["std"] }
+
+[[bin]]
+name = "types_01"
+path = "./src/types_01.rs"
+
+[[bin]]
+name = "types_02"
+path = "./src/types_02.rs"
+
+[[bin]]
+name = "types_03"
+path = "./src/types_03.rs"
+
+[[bin]]
+name = "types_04"
+path = "./src/types_04.rs"
+
+[[bin]]
+name = "types_05"
+path = "./src/types_05.rs"
+
+[[bin]]
+name = "types_06"
+path = "./src/types_06.rs"
+
+[[bin]]
+name = "types_07"
+path = "./src/types_07.rs"
