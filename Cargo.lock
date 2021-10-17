@@ -350,6 +350,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "closure"
+version = "0.1.0"
+
+[[package]]
 name = "collection"
 version = "0.1.0"
 dependencies = [
@@ -785,6 +789,10 @@ dependencies = [
  "tokio-util",
  "tracing",
 ]
+
+[[package]]
+name = "handle_err"
+version = "0.1.0"
 
 [[package]]
 name = "hash_map"

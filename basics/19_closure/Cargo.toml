@@ -1,0 +1,36 @@
+[package]
+name = "closure"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[[bin]]
+name = "closure_01"
+path = "./src/closure_01.rs"
+
+[[bin]]
+name = "closure_02"
+path = "./src/closure_02.rs"
+
+[[bin]]
+name = "closure_03"
+path = "./src/closure_03.rs"
+
+[[bin]]
+name = "closure_04"
+path = "./src/closure_04.rs"
+
+[[bin]]
+name = "closure_05"
+path = "./src/closure_05.rs"
+
+[[bin]]
+name = "closure_06"
+path = "./src/closure_06.rs"
+
+[[bin]]
+name = "closure_07"
+path = "./src/closure_07.rs"

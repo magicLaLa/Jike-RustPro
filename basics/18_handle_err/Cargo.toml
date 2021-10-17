@@ -1,0 +1,17 @@
+[package]
+name = "handle_err"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+
+[[bin]]
+name = "handle_err_01"
+path = "./src/handle_err_01.rs"
+
+[[bin]]
+name = "handle_err_02"
+path = "./src/handle_err_02.rs"

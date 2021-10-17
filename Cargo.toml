@@ -16,6 +16,8 @@ members = [
   "basics/14_traits",
   "basics/15_data_struct",
   "basics/16_collection",
-  "basics/17_hash_map"
+  "basics/17_hash_map",
+  "basics/18_handle_err",
+  "basics/19_closure"
 ]
-default-members = ["basics/17_hash_map"]
+default-members = ["basics/19_closure"]
