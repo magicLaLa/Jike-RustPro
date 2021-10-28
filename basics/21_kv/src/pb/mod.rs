@@ -45,6 +45,15 @@ impl CommandRequest {
             })),
         }
     }
+    /// 创建 HDEL 命令
+    pub fn new_hdel(table: impl Into<String>, key: impl Into<String>) -> Self {
+        Self {
+            request_data: Some(RequestData::Hdel(Hdel {
+                table: table.into(),
+                key: key.into(),
+            })),
+        }
+    }
 }
 
 
@@ -57,6 +66,19 @@ impl From<Value> for CommandResponse {
           ..Default::default()
       }
   }
+}
+
+impl From<Option<Value>> for CommandResponse {
+    fn from(v: Option<Value>) -> Self {
+        Self {
+            status: StatusCode::OK.as_u16() as _,
+            values: match v {
+                Some(v) => vec![v],
+                None => vec![],
+            },
+            ..Default::default()
+        }
+    }
 }
 
 impl From<Vec<Option<Value>>> for CommandResponse {
