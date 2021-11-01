@@ -14,7 +14,7 @@ fn main() {
             if let Ok(p) = path_buf {
                 if let Ok(lines) = read_lines(p) {
                     // 使用迭代器，返回一个（可选）字符串
-                    for (i, line) in lines.into_iter().enumerate() {
+                    for (i, line) in lines.enumerate() {
                         if let Ok(str) = line {
                             match reg_str.find(&str) {
                                 Some(v) => println!("{}:{}  {}", i, v.start(), str),

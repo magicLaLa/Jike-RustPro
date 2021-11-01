@@ -20,6 +20,7 @@ members = [
   "basics/18_handle_err",
   "basics/19_closure",
   "basics/21_kv",
-  "read_file"
+  "read_file",
+  "rgrep"
 ]
-default-members = ["read_file"]
+default-members = ["rgrep"]
