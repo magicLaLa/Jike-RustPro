@@ -21,6 +21,7 @@ members = [
   "basics/19_closure",
   "basics/21_kv",
   "read_file",
-  "rgrep"
+  "rgrep",
+  "advanced/23_types"
 ]
-default-members = ["rgrep"]
+default-members = ["advanced/23_types"]
