@@ -25,4 +25,4 @@ members = [
   "advanced/23_types",
   "advanced/24_trait_obj"
 ]
-default-members = ["advanced/24_trait_obj"]
+default-members = ["basics/21_kv"]
