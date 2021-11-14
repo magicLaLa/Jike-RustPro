@@ -60,7 +60,7 @@ async fn generatr(
     let data = retrieve_image(&url, cache).await
         .map_err(|_| StatusCode::BAD_REQUEST)?;
 
-    let mut engine: Photon = data.try_into().map_err(|_| StatusCode::BAD_REQUEST)?;
+    let mut engine = Photon::create(data).map_err(|_| StatusCode::BAD_REQUEST)?;
     engine.apply(&spec.specs);
     let image = engine.generate(ImageOutputFormat::Jpeg(85));
     info!("Finished processing: iamge size {}", image.len());
