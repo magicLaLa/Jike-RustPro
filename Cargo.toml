@@ -24,6 +24,7 @@ members = [
   "rgrep",
   "advanced/23_types",
   "advanced/24_trait_obj",
-  "advanced/27_libs"
+  "advanced/27_libs",
+  "advanced/29_network"
 ]
-default-members = ["advanced/27_libs"]
+default-members = ["advanced/29_network"]
