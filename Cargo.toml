@@ -23,6 +23,7 @@ members = [
   "read_file",
   "rgrep",
   "advanced/23_types",
-  "advanced/24_trait_obj"
+  "advanced/24_trait_obj",
+  "advanced/27_libs"
 ]
-default-members = ["basics/21_kv"]
+default-members = ["advanced/27_libs"]
