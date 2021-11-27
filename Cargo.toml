@@ -26,6 +26,7 @@ members = [
   "advanced/24_trait_obj",
   "advanced/27_libs",
   "advanced/29_network",
-  "advanced/30_unsaferust"
+  "advanced/30_unsaferust",
+  "advanced/31_bzlib-sys"
 ]
-default-members = ["advanced/30_unsaferust"]
+default-members = ["advanced/31_bzlib-sys"]
