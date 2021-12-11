@@ -28,6 +28,7 @@ members = [
   "advanced/29_network",
   "advanced/30_unsaferust",
   "advanced/31_bzlib-sys",
-  "advanced/32_xunmi-py"
+  "advanced/32_xunmi-py",
+  "advanced/33_concurrency"
 ]
-default-members = ["advanced/32_xunmi-py"]
+default-members = ["advanced/33_concurrency"]
