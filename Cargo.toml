@@ -27,6 +27,7 @@ members = [
   "advanced/27_libs",
   "advanced/29_network",
   "advanced/30_unsaferust",
-  "advanced/31_bzlib-sys"
+  "advanced/31_bzlib-sys",
+  "advanced/32_xunmi-py"
 ]
-default-members = ["advanced/31_bzlib-sys"]
+default-members = ["advanced/32_xunmi-py"]
