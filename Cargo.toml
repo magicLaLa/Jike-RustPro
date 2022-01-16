@@ -31,6 +31,6 @@ members = [
   "advanced/32_xunmi-py",
   "advanced/33_concurrency",
   "advanced/35_mpsc_channel",
-  "advanced/36_kv"
+  "advanced/36_37_kv"
 ]
-default-members = ["advanced/36_kv"]
+default-members = ["advanced/36_37_kv"]
