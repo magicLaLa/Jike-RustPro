@@ -417,6 +417,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "async_inter"
+version = "0.1.0"
+
+[[package]]
 name = "asynchronous-codec"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

@@ -33,6 +33,7 @@ members = [
   "advanced/33_concurrency",
   "advanced/35_mpsc_channel",
   "advanced/36_37_kv",
-  "advanced/38_async"
+  "advanced/38_async",
+  "advanced/39_async_inter"
 ]
-default-members = ["advanced/38_async"]
+default-members = ["advanced/39_async_inter"]
