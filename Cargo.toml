@@ -34,6 +34,7 @@ members = [
   "advanced/35_mpsc_channel",
   "advanced/36_37_kv",
   "advanced/38_async",
-  "advanced/39_async_inter"
+  "advanced/39_async_inter",
+  "advanced/40_async"
 ]
-default-members = ["advanced/39_async_inter"]
+default-members = ["advanced/40_async"]
