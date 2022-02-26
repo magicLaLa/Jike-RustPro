@@ -2627,9 +2627,11 @@ dependencies = [
  "thiserror",
  "tokio",
  "tokio-rustls",
+ "tokio-stream",
  "tokio-util",
  "tracing",
  "tracing-subscriber 0.2.25",
+ "yamux",
 ]
 
 [[package]]
@@ -6180,6 +6182,7 @@ dependencies = [
  "futures-core",
  "pin-project-lite 0.2.7",
  "tokio",
+ "tokio-util",
 ]
 
 [[package]]

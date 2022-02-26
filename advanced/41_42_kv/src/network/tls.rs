@@ -1,22 +1,21 @@
 use std::io::Cursor;
 use std::sync::Arc;
 
-use crate::KvError;
 use tokio::io::{AsyncRead, AsyncWrite};
-use tokio_rustls::rustls::{
-    internal::pemfile, AllowAnyAnonymousOrAuthenticatedClient, Certificate, ClientConfig,
-    NoClientAuth, PrivateKey, RootCertStore, ServerConfig,
-};
+use tokio_rustls::rustls::{internal::pemfile, Certificate, ClientConfig, ServerConfig};
+use tokio_rustls::rustls::{AllowAnyAuthenticatedClient, NoClientAuth, PrivateKey, RootCertStore};
 use tokio_rustls::webpki::DNSNameRef;
 use tokio_rustls::TlsConnector;
 use tokio_rustls::{
     client::TlsStream as ClientTlsStream, server::TlsStream as ServerTlsStream, TlsAcceptor,
 };
 
-/// KV Server 自己的 ALPN（Application-Layer Protocol Negotiation）
+use crate::KvError;
+
+/// KV Server 自己的 ALPN (Application-Layer Protocol Negotiation)
 const ALPN_KV: &str = "kv";
 
-/// 存放 TLS ServerConfig 并提供方法 accept 把底层协议转换成 TLS
+/// 存放 TLS ServerConfig 并提供方法 accept 把底层的协议转换成 TLS
 #[derive(Clone)]
 pub struct TlsServerAcceptor {
     inner: Arc<ServerConfig>,
@@ -30,16 +29,16 @@ pub struct TlsClientConnector {
 }
 
 impl TlsClientConnector {
-    /// 加载 client cert / CA cert 生成 CLientConfig
+    /// 加载 client cert / CA cert，生成 ClientConfig
     pub fn new(
         domain: impl Into<String>,
-        identifier: Option<(&str, &str)>,
+        identity: Option<(&str, &str)>,
         server_ca: Option<&str>,
     ) -> Result<Self, KvError> {
         let mut config = ClientConfig::new();
 
         // 如果有客户端证书，加载之
-        if let Some((cert, key)) = identifier {
+        if let Some((cert, key)) = identity {
             let certs = load_certs(cert)?;
             let key = load_key(key)?;
             config.set_single_client_cert(certs, key)?;
@@ -70,7 +69,7 @@ impl TlsClientConnector {
         S: AsyncRead + AsyncWrite + Unpin + Send,
     {
         let dns = DNSNameRef::try_from_ascii_str(self.domain.as_str())
-            .map_err(|_| KvError::Internal("Invaild DNS name".into()))?;
+            .map_err(|_| KvError::Internal("Invalid DNS name".into()))?;
 
         let stream = TlsConnector::from(self.config.clone())
             .connect(dns, stream)
@@ -94,10 +93,9 @@ impl TlsServerAcceptor {
                 let mut client_root_cert_store = RootCertStore::empty();
                 client_root_cert_store
                     .add_pem_file(&mut cert)
-                    .map_err(|e| KvError::CertifcateParseError("CA", "cert"))?;
+                    .map_err(|_| KvError::CertifcateParseError("CA", "cert"))?;
 
-                let client_auth =
-                    AllowAnyAnonymousOrAuthenticatedClient::new(client_root_cert_store);
+                let client_auth = AllowAnyAuthenticatedClient::new(client_root_cert_store);
                 ServerConfig::new(client_auth)
             }
         };
@@ -106,7 +104,7 @@ impl TlsServerAcceptor {
         config
             .set_single_cert(certs, key)
             .map_err(|_| KvError::CertifcateParseError("server", "cert"))?;
-        config.set_protocols(&[Vec::from(&ALPN_KV[..])]);
+        config.set_protocols(&[Vec::from(ALPN_KV)]);
 
         Ok(Self {
             inner: Arc::new(config),
@@ -119,7 +117,7 @@ impl TlsServerAcceptor {
         S: AsyncRead + AsyncWrite + Unpin + Send,
     {
         let acceptor = TlsAcceptor::from(self.inner.clone());
-       Ok(acceptor.accept(stream).await?)
+        Ok(acceptor.accept(stream).await?)
     }
 }
 
@@ -131,7 +129,7 @@ fn load_certs(cert: &str) -> Result<Vec<Certificate>, KvError> {
 fn load_key(key: &str) -> Result<PrivateKey, KvError> {
     let mut cursor = Cursor::new(key);
 
-    // 先尝试用 PKCS* 加载 私钥
+    // 先尝试用 PKCS8 加载私钥
     if let Ok(mut keys) = pemfile::pkcs8_private_keys(&mut cursor) {
         if !keys.is_empty() {
             return Ok(keys.remove(0));
@@ -146,20 +144,13 @@ fn load_key(key: &str) -> Result<PrivateKey, KvError> {
         }
     }
 
+    // 不支持的私钥类型
     Err(KvError::CertifcateParseError("private", "key"))
 }
 
 #[cfg(test)]
-mod tests {
-
-    use std::net::SocketAddr;
-
-    use super::*;
-    use anyhow::Result;
-    use tokio::{
-        io::{AsyncReadExt, AsyncWriteExt},
-        net::{TcpListener, TcpStream},
-    };
+pub mod tls_utils {
+    use crate::{KvError, TlsClientConnector, TlsServerAcceptor};
 
     const CA_CERT: &str = include_str!("../../fixtures/ca.cert");
     const CLIENT_CERT: &str = include_str!("../../fixtures/client.cert");
@@ -167,13 +158,42 @@ mod tests {
     const SERVER_CERT: &str = include_str!("../../fixtures/server.cert");
     const SERVER_KEY: &str = include_str!("../../fixtures/server.key");
 
+    pub fn tls_connector(client_cert: bool) -> Result<TlsClientConnector, KvError> {
+        let ca = Some(CA_CERT);
+        let client_identity = Some((CLIENT_CERT, CLIENT_KEY));
+
+        // FIXME: 这里的 domain 要跟创建证书的 domain 相同，否则会报 `invalid certificate: CertNotValidForName`
+        match client_cert {
+            false => TlsClientConnector::new("kvserver.acm.inc", None, ca),
+            true => TlsClientConnector::new("kvserver.acm.inc", client_identity, ca),
+        }
+    }
+
+    pub fn tls_acceptor(client_cert: bool) -> Result<TlsServerAcceptor, KvError> {
+        let ca = Some(CA_CERT);
+        match client_cert {
+            true => TlsServerAcceptor::new(SERVER_CERT, SERVER_KEY, ca),
+            false => TlsServerAcceptor::new(SERVER_CERT, SERVER_KEY, None),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::tls_utils::tls_acceptor;
+    use crate::network::tls::tls_utils::tls_connector;
+    use anyhow::Result;
+    use std::net::SocketAddr;
+    use std::sync::Arc;
+    use tokio::{
+        io::{AsyncReadExt, AsyncWriteExt},
+        net::{TcpListener, TcpStream},
+    };
+
     #[tokio::test]
     async fn tls_should_work() -> Result<()> {
-        let ca = Some(CA_CERT);
-
-        let addr = start_server(None).await?;
-
-        let connector = TlsClientConnector::new("kvserver.acm.inc", None, ca)?;
+        let addr = start_server(false).await?;
+        let connector = tls_connector(false)?;
         let stream = TcpStream::connect(addr).await?;
         let mut stream = connector.connect(stream).await?;
         stream.write_all(b"hello world!").await?;
@@ -186,12 +206,8 @@ mod tests {
 
     #[tokio::test]
     async fn tls_with_client_cert_should_work() -> Result<()> {
-        let client_identity = Some((CLIENT_CERT, CLIENT_KEY));
-        let ca = Some(CA_CERT);
-
-        let addr = start_server(ca.clone()).await?;
-
-        let connector = TlsClientConnector::new("kvserver.acm.inc", client_identity, ca)?;
+        let addr = start_server(true).await?;
+        let connector = tls_connector(true)?;
         let stream = TcpStream::connect(addr).await?;
         let mut stream = connector.connect(stream).await?;
         stream.write_all(b"hello world!").await?;
@@ -204,9 +220,10 @@ mod tests {
 
     #[tokio::test]
     async fn tls_with_bad_domain_should_not_work() -> Result<()> {
-        let addr = start_server(None).await?;
+        let addr = start_server(false).await?;
 
-        let connector = TlsClientConnector::new("kvserver1.acm.inc", None, Some(CA_CERT))?;
+        let mut connector = tls_connector(false)?;
+        connector.domain = Arc::new("kvserver1.acme.inc".into());
         let stream = TcpStream::connect(addr).await?;
         let result = connector.connect(stream).await;
 
@@ -215,8 +232,8 @@ mod tests {
         Ok(())
     }
 
-    async fn start_server(ca: Option<&str>) -> Result<SocketAddr> {
-        let acceptor = TlsServerAcceptor::new(SERVER_CERT, SERVER_KEY, ca)?;
+    async fn start_server(client_cert: bool) -> Result<SocketAddr> {
+        let acceptor = tls_acceptor(client_cert)?;
 
         let echo = TcpListener::bind("127.0.0.1:0").await.unwrap();
         let addr = echo.local_addr().unwrap();

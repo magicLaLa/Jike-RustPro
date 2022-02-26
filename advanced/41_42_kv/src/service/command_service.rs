@@ -4,7 +4,7 @@ impl CommandService for Hget {
     fn execute(self, store: &impl Storage) -> CommandResponse {
         match store.get(&self.table, &self.key) {
             Ok(Some(v)) => v.into(),
-            Ok(None) => KvError::NotFound(self.table, self.key).into(),
+            Ok(None) => KvError::NotFound(format!("table {}, key {}", self.table, self.key)).into(),
             Err(e) => e.into(),
         }
     }
@@ -119,7 +119,7 @@ mod tests {
         dispatch(cmd, &store);
         let cmd = CommandRequest::new_hget("score", "u1");
         let res = dispatch(cmd, &store);
-        assert_res_ok(res, &[10.into()], &[]);
+        assert_res_ok(&res, &[10.into()], &[]);
     }
 
     #[test]
@@ -127,7 +127,7 @@ mod tests {
         let store = MemTable::new();
         let cmd = CommandRequest::new_hget("score", "u1");
         let res = dispatch(cmd, &store);
-        assert_res_error(res, 404, "Not found");
+        assert_res_error(&res, 404, "Not found");
     }
 
     #[test]
@@ -143,7 +143,7 @@ mod tests {
         let cmd = CommandRequest::new_hmget("user", vec!["u1".into(), "u4".into(), "u3".into()]);
         let res = dispatch(cmd, &store);
         let values = &["Tyr".into(), Value::default(), "Rosie".into()];
-        assert_res_ok(res, values, &[]);
+        assert_res_ok(&res, values, &[]);
     }
 
     #[test]
@@ -163,7 +163,7 @@ mod tests {
             Kvpair::new("u2", 8.into()),
             Kvpair::new("u3", 11.into()),
         ];
-        assert_res_ok(res, &[], pairs);
+        assert_res_ok(&res, &[], pairs);
     }
 
     #[test]
@@ -171,10 +171,10 @@ mod tests {
         let store = MemTable::new();
         let cmd = CommandRequest::new_hset("t1", "hello", "world".into());
         let res = dispatch(cmd.clone(), &store);
-        assert_res_ok(res, &[Value::default()], &[]);
+        assert_res_ok(&res, &[Value::default()], &[]);
 
         let res = dispatch(cmd, &store);
-        assert_res_ok(res, &["world".into()], &[]);
+        assert_res_ok(&res, &["world".into()], &[]);
     }
 
     #[test]
@@ -187,7 +187,7 @@ mod tests {
         ];
         let cmd = CommandRequest::new_hmset("t1", pairs);
         let res = dispatch(cmd, &store);
-        assert_res_ok(res, &["world".into(), Value::default()], &[]);
+        assert_res_ok(&res, &["world".into(), Value::default()], &[]);
     }
 
     #[test]
@@ -196,11 +196,11 @@ mod tests {
         set_key_pairs("t1", vec![("u1", "v1")], &store);
         let cmd = CommandRequest::new_hdel("t1", "u2");
         let res = dispatch(cmd, &store);
-        assert_res_ok(res, &[Value::default()], &[]);
+        assert_res_ok(&res, &[Value::default()], &[]);
 
         let cmd = CommandRequest::new_hdel("t1", "u1");
         let res = dispatch(cmd, &store);
-        assert_res_ok(res, &["v1".into()], &[]);
+        assert_res_ok(&res, &["v1".into()], &[]);
     }
 
     #[test]
@@ -210,7 +210,7 @@ mod tests {
 
         let cmd = CommandRequest::new_hmdel("t1", vec!["u1".into(), "u3".into()]);
         let res = dispatch(cmd, &store);
-        assert_res_ok(res, &["v1".into(), Value::default()], &[]);
+        assert_res_ok(&res, &["v1".into(), Value::default()], &[]);
     }
 
     #[test]
@@ -219,11 +219,11 @@ mod tests {
         set_key_pairs("t1", vec![("u1", "v1")], &store);
         let cmd = CommandRequest::new_hexist("t1", "u2");
         let res = dispatch(cmd, &store);
-        assert_res_ok(res, &[false.into()], &[]);
+        assert_res_ok(&res, &[false.into()], &[]);
 
         let cmd = CommandRequest::new_hexist("t1", "u1");
         let res = dispatch(cmd, &store);
-        assert_res_ok(res, &[true.into()], &[]);
+        assert_res_ok(&res, &[true.into()], &[]);
     }
 
     #[test]
@@ -233,7 +233,7 @@ mod tests {
 
         let cmd = CommandRequest::new_hmexist("t1", vec!["u1".into(), "u3".into()]);
         let res = dispatch(cmd, &store);
-        assert_res_ok(res, &[true.into(), false.into()], &[]);
+        assert_res_ok(&res, &[true.into(), false.into()], &[]);
     }
 
     fn set_key_pairs<T: Into<Value>>(table: &str, pairs: Vec<(&str, T)>, store: &impl Storage) {

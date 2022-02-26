@@ -57,7 +57,7 @@ async fn gen_files(pem: &CertPem) -> Result<()> {
       CertType::CA => "ca"
   };
 
-  fs::write(format!("advanced/36_37_kv/fixtures/{}.cert", name), pem.cert.as_bytes()).await?;
-  fs::write(format!("advanced/36_37_kv/fixtures/{}.key", name), pem.key.as_bytes()).await?;
+  fs::write(format!("advanced/41_42_kv/fixtures/{}.cert", name), pem.cert.as_bytes()).await?;
+  fs::write(format!("advanced/41_42_kv/fixtures/{}.key", name), pem.key.as_bytes()).await?;
   Ok(())
 }
