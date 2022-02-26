@@ -35,6 +35,7 @@ members = [
   "advanced/36_37_kv",
   "advanced/38_async",
   "advanced/39_async_inter",
-  "advanced/40_async"
+  "advanced/40_async",
+  "advanced/41_42_kv",
 ]
-default-members = ["advanced/40_async"]
+default-members = ["advanced/41_42_kv",]

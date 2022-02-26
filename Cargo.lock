@@ -2608,6 +2608,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "kv3"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-prost",
+ "bytes 1.1.0",
+ "certify",
+ "dashmap",
+ "flate2",
+ "futures",
+ "http",
+ "prost",
+ "prost-build",
+ "rustls-native-certs",
+ "sled",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "tokio-rustls",
+ "tokio-util",
+ "tracing",
+ "tracing-subscriber 0.2.25",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
