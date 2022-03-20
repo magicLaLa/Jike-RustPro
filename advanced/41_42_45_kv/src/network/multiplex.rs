@@ -3,6 +3,9 @@ use std::marker::PhantomData;
 use tokio::io::{AsyncRead, AsyncWrite};
 use tokio_util::compat::{Compat, FuturesAsyncReadCompatExt, TokioAsyncReadCompatExt};
 use yamux::{Config, Connection, ConnectionError, Control, Mode, WindowUpdateMode};
+use tracing::instrument;
+
+use crate::ProstClientStream;
 
 /// Yamux 控制结构
 pub struct YamuxCtrl<S> {
@@ -31,6 +34,7 @@ where
     }
 
     // 创建 YamuxCtrl
+    #[instrument(name = "yamux_ctrl_new", skip_all)]
     fn new<F, Fut>(stream: S, config: Option<Config>, is_client: bool, f: F) -> Self
     where
         F: FnMut(yamux::Stream) -> Fut,
@@ -63,9 +67,10 @@ where
     }
 
     /// 打开一个新的 stream
-    pub async fn open_stream(&mut self) -> Result<Compat<yamux::Stream>, ConnectionError> {
+    #[instrument(skip_all)]
+    pub async fn open_stream(&mut self) -> Result<ProstClientStream<Compat<yamux::Stream>>, ConnectionError> {
         let stream = self.ctrl.open_stream().await?;
-        Ok(stream.compat())
+        Ok(ProstClientStream::new(stream.compat()))
     }
 }
 
@@ -78,8 +83,8 @@ mod tests {
         assert_res_ok,
         network::tls::tls_utils::{tls_acceptor, tls_connector},
         utils::DummyStream,
-        CommandRequest, KvError, MemTable, ProstClientStream, ProstServerStream, Service,
-        ServiceInner, Storage, TlsServerAcceptor,
+        CommandRequest, KvError, MemTable, ProstServerStream, Service, ServiceInner, Storage,
+        TlsServerAcceptor,
     };
     use anyhow::Result;
     use tokio::net::{TcpListener, TcpStream};
@@ -161,15 +166,13 @@ mod tests {
         let mut ctrl = YamuxCtrl::new_client(stream, None);
 
         // 从 client ctrl 中打开一个新的 yamux stream
-        let stream = ctrl.open_stream().await?;
-        // 封装成 ProstClientStream
-        let mut client = ProstClientStream::new(stream);
+        let mut stream = ctrl.open_stream().await?;
 
         let cmd = CommandRequest::new_hset("t1", "k1", "v1".into());
-        client.execute_unary(&cmd).await.unwrap();
+        stream.execute_unary(&cmd).await.unwrap();
 
         let cmd = CommandRequest::new_hget("t1", "k1");
-        let res = client.execute_unary(&cmd).await.unwrap();
+        let res = stream.execute_unary(&cmd).await.unwrap();
         assert_res_ok(&res, &["v1".into()], &[]);
 
         Ok(())

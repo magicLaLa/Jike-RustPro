@@ -10,15 +10,15 @@ pub use stream::ProstStream;
 pub use stream_result::StreamResult;
 pub use tls::{TlsClientConnector, TlsServerAcceptor};
 
-use crate::{CommandRequest, CommandResponse, KvError, Service};
+use crate::{CommandRequest, CommandResponse, KvError, Service, Storage};
 use futures::{SinkExt, StreamExt};
 use tokio::io::{AsyncRead, AsyncWrite};
 use tracing::info;
 
 /// 处理服务器端的某个 accept 下来的 socket 的读写
-pub struct ProstServerStream<S> {
+pub struct ProstServerStream<S, Storage> {
     inner: ProstStream<S, CommandRequest, CommandResponse>,
-    service: Service,
+    service: Service<Storage>,
 }
 
 /// 处理客户端 socket 的读写
@@ -26,11 +26,12 @@ pub struct ProstClientStream<S> {
     inner: ProstStream<S, CommandResponse, CommandRequest>,
 }
 
-impl<S> ProstServerStream<S>
+impl<S, Store> ProstServerStream<S, Store>
 where
     S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
+    Store: Storage,
 {
-    pub fn new(stream: S, service: Service) -> Self {
+    pub fn new(stream: S, service: Service<Store>) -> Self {
         Self {
             inner: ProstStream::new(stream),
             service,

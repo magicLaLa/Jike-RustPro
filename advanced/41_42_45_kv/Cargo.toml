@@ -16,7 +16,6 @@ tracing = "0.1" # 日志处理
 sled = "0.34" # sled db
 flate2 = "1" # gzip 压缩
 tokio = { version = "1", features = ["full"] } # 异步网络库
-tracing-subscriber = "0.2" # 日志处理
 anyhow = "1" # 错误处理
 tokio-rustls = "0.22" # tsl 支持
 rustls-native-certs = "0.5"
@@ -24,12 +23,21 @@ futures = "0.3" # 提供 Stream trait
 tokio-util = { version = "0.6", features = ["compat"] }
 yamux = "0.9" # yamux 多路复用支持
 tokio-stream = { version = "0.1", features = ["sync"] } # 处理 stream
+serde = {  version = "1", features = ["derive"] }
+toml = "0.5" # toml 支持
+# 测量和监控
+opentelemetry-jaeger = "0.15" # opentelemetry jaeger 支持
+tracing-appender = "0.1" # 文件日志
+tracing-opentelemetry = "0.15" # opentelemetry 支持
+tracing-subscriber = { version = "0.2", features = ["json", "chrono"] } # 日志处理
 
 [dev-dependencies]
 async-prost = "0.2.1" # 支持把 protobuf 封装成 TCP frame
 tempfile = "3" # 处理临时目录和临时文件
 tokio-util = { version = "0.6", features = ["codec"] }
 certify = "0.3" # 生成CA证书
+criterion = { version = "0.3", features = ["async_futures", "async_tokio", "html_reports"] } # benchmark
+rand = "0.8"
 
 [build-dependencies]
 prost-build = "0.8" # 编译 protobuf
@@ -41,3 +49,7 @@ path = "src/server.rs"
 [[bin]]
 name = "kvc"
 path = "src/client.rs"
+
+[[bench]]
+name = "pubsub"
+harness = false

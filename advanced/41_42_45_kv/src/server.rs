@@ -1,39 +1,53 @@
+use std::env;
+
 use anyhow::Result;
-use kv3::{MemTable, ProstServerStream, Service, ServiceInner, TlsServerAcceptor, YamuxCtrl};
-use tokio::net::TcpListener;
-use tokio_util::compat::FuturesAsyncReadCompatExt;
-use tracing::info;
+use kv3::{start_server_with_config, RotationConfig, ServerConfig};
+use tokio::fs;
+use tracing::span;
+use tracing_subscriber::{
+    fmt::{self, format},
+    layer::SubscriberExt,
+    prelude::*,
+    EnvFilter,
+};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    tracing_subscriber::fmt::init();
-    let addr = "127.0.0.1:9527";
+    // 如果有环境变量，使用环境变量中的 config
+    let config = match env::var("KV_SERVER_CONFIG") {
+        Ok(path) => fs::read_to_string(&path).await?,
+        Err(_) => include_str!("../fixtures/server.conf").to_string(),
+    };
+    let config: ServerConfig = toml::from_str(&config)?;
 
-    // 以后从配置文件取
-    let server_cert = include_str!("../fixtures/server.cert");
-    let server_key = include_str!("../fixtures/server.key");
+    let tracer = opentelemetry_jaeger::new_pipeline()
+        .with_service_name("kv-server")
+        .install_simple()?;
+    let opentelemetry = tracing_opentelemetry::layer().with_tracer(tracer);
 
-    let acceptor = TlsServerAcceptor::new(server_cert, server_key, None)?;
+    // 添加
+    let log = &config.log;
+    let file_appender = match log.rotation {
+        RotationConfig::Hourly => tracing_appender::rolling::hourly(&log.path, "server.log"),
+        RotationConfig::Daily => tracing_appender::rolling::daily(&log.path, "server.log"),
+        RotationConfig::Never => tracing_appender::rolling::never(&log.path, "server.log"),
+    };
 
-    let service: Service = ServiceInner::new(MemTable::new()).into();
-    let listener = TcpListener::bind(addr).await?;
-    info!("Start listening on {}", addr);
-    loop {
-        let tls = acceptor.clone();
-        let (stream, addr) = listener.accept().await?;
-        info!("Client {:?} connected", addr);
+    let (non_blocking, _guard1) = tracing_appender::non_blocking(file_appender);
+    let fmt_layer = fmt::layer()
+        .event_format(format().compact())
+        .with_writer(non_blocking);
 
-        let svc = service.clone();
-        tokio::spawn(async move {
-            let stream = tls.accept(stream).await.unwrap();
-            YamuxCtrl::new_server(stream, None, move |stream| {
-                let svc1 = svc.clone();
-                async move {
-                    let stream = ProstServerStream::new(stream.compat(), svc1.clone());
-                    stream.process().await.unwrap();
-                    Ok(())
-                }
-            });
-        });
-    }
+    tracing_subscriber::registry()
+        .with(EnvFilter::from_default_env())
+        .with(fmt_layer)
+        .with(opentelemetry)
+        .init();
+
+    let root = span!(tracing::Level::INFO, "app_start", work_units = 2);
+    let _enter = root.enter();
+
+    start_server_with_config(&config).await?;
+
+    Ok(())
 }
