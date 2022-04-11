@@ -39,6 +39,7 @@ members = [
   "advanced/41_42_45_kv",
   "advanced/43_real_project",
   "advanced/44_data_processing",
-  "advanced/46_architecture"
+  "advanced/46_architecture",
+  "advanced/47_48_macros"
 ]
-default-members = ["advanced/46_architecture",]
+default-members = ["advanced/47_48_macros",]
