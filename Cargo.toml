@@ -40,6 +40,6 @@ members = [
   "advanced/43_real_project",
   "advanced/44_data_processing",
   "advanced/46_architecture",
-  "advanced/47_48_macros"
+  "advanced/47_ manual_macros"
 ]
-default-members = ["advanced/47_48_macros",]
+default-members = ["advanced/47_ manual_macros",]
