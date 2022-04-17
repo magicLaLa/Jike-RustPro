@@ -1,5 +1,5 @@
 [package]
-name = "builder"
+name = "macros_2"
 version = "0.1.0"
 edition = "2021"
 
@@ -9,6 +9,6 @@ edition = "2021"
 proc-macro = true
 
 [dependencies]
-proc-macro2 = "1"
-syn = { version = "1", features = ["extra-traits"] }
-quote = "1"
+proc-macro2 = "1" # proc-macro 的封装
+quote = "1" # 用于生成代码的 TokenStream
+syn = { version = "1", features = ["extra-traits"] } # 用于解析 TokenStream，使用 extra-traits 可以用于 Debug

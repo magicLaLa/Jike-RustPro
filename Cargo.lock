@@ -820,15 +820,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "builder"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "bumpalo"
 version = "3.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3756,6 +3747,15 @@ dependencies = [
  "litrs",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "macros_2"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

@@ -1,12 +1,12 @@
-use builder::Builder;
+use macros_2::Builder;
 
 #[allow(dead_code)]
 #[derive(Debug,Builder)]
 pub struct Command {
     executable: String,
     args: Vec<String>,
-    env: Vec<String>,
-    current_dir: String,
+    env: Option<Vec<String>>,
+    current_dir: Option<String>,
 }
 
 fn main() {
@@ -15,7 +15,7 @@ fn main() {
         .args(vec!["-c".into(), "-vvv".into()])
         .env(vec![])
         .current_dir("/Users/super_tomato/Github/Jike-RustPro")
-        .finish()
+        .build()
         .unwrap();
   println!("{:?}", command);
 }
