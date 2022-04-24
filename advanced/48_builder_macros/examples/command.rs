@@ -4,6 +4,8 @@ use macros_2::Builder;
 #[derive(Debug,Builder)]
 pub struct Command {
     executable: String,
+    // FIXME: test
+    #[builder(abc = "xyz")]
     args: Vec<String>,
     env: Option<Vec<String>>,
     current_dir: Option<String>,
