@@ -41,6 +41,8 @@ members = [
   "advanced/44_data_processing",
   "advanced/46_architecture",
   "advanced/47_manual_macros",
-  "advanced/48_builder_macros"
+  "advanced/48_builder_macros",
+  # 其它自己练习
+  "other/browser_engin"
 ]
-default-members = ["advanced/48_builder_macros",]
+default-members = ["other/browser_engin",]
