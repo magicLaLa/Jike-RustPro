@@ -12,9 +12,9 @@ pub type PropertyMap = HashMap<String, Value>;
 
 #[derive(Debug)]
 pub struct StyleNode<'a> {
-    node: &'a Node,
-    specified_values: PropertyMap,
-    children: Vec<StyleNode<'a>>,
+    pub node: &'a Node,
+    pub specified_values: PropertyMap,
+    pub children: Vec<StyleNode<'a>>,
 }
 
 #[derive(Debug)]
