@@ -44,6 +44,6 @@ members = [
   "advanced/48_builder_macros",
   # 其它自己练习
   "other/browser_engin",
-  "other/blockchain_rust_part_1"
+  "other/blockchain_rust"
 ]
-default-members = ["other/blockchain_rust_part_1"]
+default-members = ["other/blockchain_rust"]
