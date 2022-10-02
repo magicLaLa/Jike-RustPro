@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::ProofOfWork;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default)]
 pub struct BlockHeader {
     timestamp: i64,
     prev_hash: String,
@@ -24,7 +24,7 @@ impl BlockHeader {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Default, Clone)]
 pub struct Block {
     header: BlockHeader,
     data: String,
