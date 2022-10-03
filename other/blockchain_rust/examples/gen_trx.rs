@@ -14,7 +14,7 @@ fn main() {
     let path = current_dir().unwrap().join("other/blockchain_rust/data");
     let storage = Arc::new(SledDb::new(path));
 
-    let mut bc = Blockchain::new(storage.clone(), justin_addr);
+    let mut bc = Blockchain::new(storage.clone());
     let utxos = UTXOSet::new(storage);
 
     let tx_1 = Transaction::new_utxo(justin_addr, &bob_addr, 4, &utxos, &bc);

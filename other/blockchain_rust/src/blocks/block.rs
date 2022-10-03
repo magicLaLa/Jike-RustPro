@@ -1,17 +1,17 @@
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 
-use crate::{ProofOfWork, Transaction, utils::{serialize, hash_to_str}};
+use crate::{
+    utils::{hash_to_str, serialize},
+    ProofOfWork, Transaction,
+};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default)]
 pub struct BlockHeader {
     timestamp: i64,
     prev_hash: String,
-    /// 交易集合的hash值，可以优化为Merkle树
     txs_hash: String,
-    /// 计算难度
     bits: usize,
-    /// 随机数，用于计算工作量证明
     nonce: usize,
 }
 
@@ -27,7 +27,7 @@ impl BlockHeader {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Default, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct Block {
     header: BlockHeader,
     tranxs: Vec<Transaction>,
@@ -41,7 +41,6 @@ impl Block {
             tranxs: txs.to_vec(),
             hash: String::new(),
         };
-
         block.set_txs_hash(txs);
 
         let pow = ProofOfWork::new(bits);
@@ -67,14 +66,14 @@ impl Block {
         self.header.nonce = nonce;
     }
 
-    pub fn set_txs_hash(&mut self, txs: &[Transaction]) {
+    pub fn set_hash(&mut self, hash: String) {
+        self.hash = hash;
+    }
+
+    fn set_txs_hash(&mut self, txs: &[Transaction]) {
         if let Ok(txs_ser) = serialize(txs) {
             self.header.txs_hash = hash_to_str(&txs_ser);
         }
-    }
-
-    pub fn set_hash(&mut self, hash: String) {
-        self.hash = hash;
     }
 
     pub fn get_tranxs(&self) -> Vec<Transaction> {

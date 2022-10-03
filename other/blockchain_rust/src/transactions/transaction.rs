@@ -25,8 +25,8 @@ impl Transaction {
             vin: vec![txin],
             vout: vec![txout],
         };
-
         tx.set_hash();
+
         tx
     }
 
@@ -35,7 +35,7 @@ impl Transaction {
         to: &str,
         amount: i32,
         utxo_set: &UTXOSet<T>,
-        bc: &Blockchain,
+        bc: &Blockchain<T>,
     ) -> Self {
         let wallets = Wallets::new().unwrap();
         let wallet = wallets.get_wallet(from).unwrap();
@@ -72,13 +72,13 @@ impl Transaction {
         tx
     }
 
-    pub fn set_hash(&mut self) {
-        if let Ok(tx_er) = serialize(self) {
-            self.id = hash_to_str(&tx_er)
+    fn set_hash(&mut self) {
+        if let Ok(tx_ser) = serialize(self) {
+            self.id = hash_to_str(&tx_ser)
         }
     }
 
-    fn sign(&mut self, bc: &Blockchain, pkcs8: &[u8]) {
+    fn sign<T: Storage>(&mut self, bc: &Blockchain<T>, pkcs8: &[u8]) {
         let mut tx_copy = self.trimmed_copy();
 
         for (idx, vin) in self.vin.iter_mut().enumerate() {
@@ -89,7 +89,7 @@ impl Transaction {
             }
             let prev_tx = prev_tx_option.unwrap();
             tx_copy.vin[idx].set_signature(vec![]);
-            tx_copy.vin[idx].set_pub_key(prev_tx.vout[vin.get_vount()].get_pub_key_hash());
+            tx_copy.vin[idx].set_pub_key(prev_tx.vout[vin.get_vout()].get_pub_key_hash());
             tx_copy.set_hash();
 
             tx_copy.vin[idx].set_pub_key(&vec![]);
@@ -112,7 +112,7 @@ impl Transaction {
             }
             let prev_tx = prev_tx_option.unwrap();
             tx_copy.vin[idx].set_signature(vec![]);
-            tx_copy.vin[idx].set_pub_key(prev_tx.vout[vin.get_vount()].get_pub_key_hash());
+            tx_copy.vin[idx].set_pub_key(prev_tx.vout[vin.get_vout()].get_pub_key_hash());
             tx_copy.set_hash();
 
             tx_copy.vin[idx].set_pub_key(&vec![]);
@@ -130,7 +130,7 @@ impl Transaction {
         true
     }
 
-    // 判断是否是 coinbase 交易
+    /// 判断是否是 coinbase 交易
     pub fn is_coinbase(&self) -> bool {
         self.vin.len() == 1 && self.vin[0].get_pub_key().len() == 0
     }
@@ -139,7 +139,7 @@ impl Transaction {
         let mut inputs = vec![];
         let mut outputs = vec![];
         for input in &self.vin {
-            let txinput = Txinput::new(input.get_txid(), input.get_vount(), vec![]);
+            let txinput = Txinput::new(input.get_txid(), input.get_vout(), vec![]);
             inputs.push(txinput);
         }
         for output in &self.vout {
@@ -164,3 +164,8 @@ impl Transaction {
         self.vin.as_slice()
     }
 }
+
+// {"Trans": {"from":"1CNu8yYPfaopQX6d5pd1LZGC7hYugF9S12","to":"1AHYhPQ5DvrY3SGe9Mkf3YP1WXq95egTbT","amount":"4"}}
+
+
+// {"Genesis":"1CNu8yYPfaopQX6d5pd1LZGC7hYugF9S12"}

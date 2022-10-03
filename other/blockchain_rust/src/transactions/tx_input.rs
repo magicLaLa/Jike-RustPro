@@ -29,7 +29,7 @@ impl Txinput {
         self.txid.clone()
     }
 
-    pub fn get_vount(&self) -> usize {
+    pub fn get_vout(&self) -> usize {
         self.vount
     }
 
