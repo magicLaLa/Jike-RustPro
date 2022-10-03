@@ -1,12 +1,14 @@
-use std::sync::{
-    atomic::{AtomicUsize, Ordering},
-    Arc, RwLock,
+use std::{
+    collections::HashMap,
+    sync::{
+        atomic::{AtomicUsize, Ordering},
+        Arc, RwLock,
+    },
 };
-use std::collections::HashMap;
 
 use tracing::info;
 
-use crate::{Block, SledDb, Storage, Txoutput, Transaction};
+use crate::{Block, SledDb, Storage, Transaction, Txoutput};
 
 pub const CURR_BITS: usize = 8;
 
@@ -39,6 +41,12 @@ impl<T: Storage> Blockchain<T> {
     }
 
     pub fn mine_block(&mut self, txs: &[Transaction]) {
+        for tx in txs {
+            if tx.verify(self) == false {
+                panic!("ERROR: Invalid transaction")
+            }
+        }
+
         let block = Block::new(txs, &self.tip.read().unwrap(), CURR_BITS);
         let hash = block.get_hash();
         self.height.fetch_add(1, Ordering::Relaxed);
@@ -75,7 +83,8 @@ impl<T: Storage> Blockchain<T> {
                 }
 
                 for txin in tx.get_vin() {
-                    spent_txos.entry(txin.get_txid())
+                    spent_txos
+                        .entry(txin.get_txid())
                         .and_modify(|v: &mut Vec<usize>| v.push(txin.get_vount()))
                         .or_insert(vec![txin.get_vount()]);
                 }
@@ -85,10 +94,22 @@ impl<T: Storage> Blockchain<T> {
         utxo
     }
 
+    pub fn find_transaction(&self, txid: String) -> Option<Transaction> {
+        let blocks = self.storage.get_block_iter().unwrap();
+        for block in blocks {
+            for tx in block.get_tranxs() {
+                if tx.get_id() == txid {
+                    return Some(tx);
+                }
+            }
+        }
+        None
+    }
+
     pub fn blocks_info(&self) {
         let blocks = self.storage.get_block_iter().unwrap();
-        for (idx, block) in blocks.enumerate() {
-            info!("{} -- {:#?}", idx, block);
+        for block in blocks {
+            info!("{:#?}", block);
         }
     }
 }
