@@ -1,10 +1,12 @@
 use sled::{transaction::TransactionResult, Db, IVec};
+use std::collections::HashMap;
 use std::path::Path;
 
 use crate::{
     error::BlockchainError,
     utils::{deserialize, serialize},
-    Block, Storage, StorageIterator, HEIGHT, TABLE_OF_BLOCK, TIP_KEY,
+    Block, Storage, StorageIterator, Txoutput, HEIGHT, TABLE_OF_BLOCK, TIP_KEY,
+    UTXO_SET,
 };
 
 pub struct SledDb {
@@ -61,6 +63,34 @@ impl Storage for SledDb {
         let prefix = format!("{}:", TABLE_OF_BLOCK);
         let iter = StorageIterator::new(self.db.scan_prefix(prefix));
         Ok(Box::new(iter))
+    }
+
+    fn get_utxo_set(&self) -> HashMap<String, Vec<crate::Txoutput>> {
+        let mut map = HashMap::new();
+
+        let prefix = format!("{}:", UTXO_SET);
+
+        for item in self.db.scan_prefix(prefix) {
+            let (k, v) = item.unwrap();
+            let txid = String::from_utf8(k.to_vec()).unwrap();
+            let txid = txid.split(":").collect::<Vec<_>>()[1].into();
+            let outputs = deserialize::<Vec<Txoutput>>(&v.to_vec()).unwrap();
+
+            map.insert(txid, outputs);
+        }
+
+        map
+    }
+
+    fn write_utxo(&self, txid: &str, outs: Vec<crate::Txoutput>) -> Result<(), BlockchainError> {
+        let name = format!("{}:{}", UTXO_SET, txid);
+        self.db.insert(name, serialize(&outs)?)?;
+        Ok(())
+    }
+
+    fn clear_utxo_set(&self) {
+        let prefix = format!("{}:", UTXO_SET);
+        self.db.remove(prefix).unwrap();
     }
 }
 

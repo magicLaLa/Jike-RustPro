@@ -1,12 +1,14 @@
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 
-use crate::ProofOfWork;
+use crate::{ProofOfWork, Transaction, utils::{serialize, hash_to_str}};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default)]
 pub struct BlockHeader {
     timestamp: i64,
     prev_hash: String,
+    /// 交易集合的hash值，可以优化为Merkle树
+    txs_hash: String,
     /// 计算难度
     bits: usize,
     /// 随机数，用于计算工作量证明
@@ -18,34 +20,39 @@ impl BlockHeader {
         Self {
             timestamp: Utc::now().timestamp(),
             prev_hash: prev_hash.into(),
+            txs_hash: String::new(),
             bits,
             nonce: 0,
         }
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Default, Clone)]
+#[derive(Debug, Serialize, Deserialize, Default, Clone)]
 pub struct Block {
     header: BlockHeader,
-    data: String,
+    tranxs: Vec<Transaction>,
     hash: String,
 }
 
 impl Block {
-    pub fn new(data: &str, prev_hash: &str, bits: usize) -> Self {
+    pub fn new(txs: &[Transaction], prev_hash: &str, bits: usize) -> Self {
         let mut block = Block {
             header: BlockHeader::new(prev_hash, bits),
-            data: data.into(),
+            tranxs: txs.to_vec(),
             hash: String::new(),
         };
+
+        block.set_txs_hash(txs);
+
         let pow = ProofOfWork::new(bits);
         pow.run(&mut block);
 
         block
     }
 
-    pub fn create_genesis_block(bits: usize) -> Self {
-        Self::new("创世区块", "", bits)
+    pub fn create_genesis_block(bits: usize, genesis_addr: &str) -> Self {
+        let coinbase = Transaction::new_coinbase(genesis_addr);
+        Self::new(&vec![coinbase], "", bits)
     }
 
     pub fn get_hash(&self) -> String {
@@ -60,7 +67,17 @@ impl Block {
         self.header.nonce = nonce;
     }
 
+    pub fn set_txs_hash(&mut self, txs: &[Transaction]) {
+        if let Ok(txs_ser) = serialize(txs) {
+            self.header.txs_hash = hash_to_str(&txs_ser);
+        }
+    }
+
     pub fn set_hash(&mut self, hash: String) {
         self.hash = hash;
+    }
+
+    pub fn get_tranxs(&self) -> &[Transaction] {
+        &self.tranxs
     }
 }

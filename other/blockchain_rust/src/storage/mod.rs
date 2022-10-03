@@ -1,5 +1,5 @@
-use crate::{error::BlockchainError, Block};
-
+use std::collections::HashMap;
+use crate::{error::BlockchainError, Block, Txoutput};
 mod sleddb;
 
 pub use sleddb::SledDb;
@@ -7,6 +7,7 @@ pub use sleddb::SledDb;
 pub const TIP_KEY: &str = "tip_hash";
 pub const HEIGHT: &str = "height";
 pub const TABLE_OF_BLOCK: &str = "blocks";
+pub const UTXO_SET: &str = "utxos";
 
 pub trait Storage: Send + Sync + 'static {
     /// 获取最后一个块的hash值
@@ -17,6 +18,13 @@ pub trait Storage: Send + Sync + 'static {
     fn update_blocks(&self, key: &str, block: &Block, height: usize);
     /// 获取区块的迭代器
     fn get_block_iter(&self) -> Result<Box<dyn Iterator<Item = Block>>, BlockchainError>;
+
+    /// 获取utxo集合
+    fn get_utxo_set(&self) -> HashMap<String, Vec<Txoutput>>;
+    /// 向数据库中写入utxo集合
+    fn write_utxo(&self, txid: &str, outs: Vec<Txoutput>) -> Result<(), BlockchainError>;
+    /// 清除utxo集合
+    fn clear_utxo_set(&self);
 }
 
 /// 定义区块迭代器
