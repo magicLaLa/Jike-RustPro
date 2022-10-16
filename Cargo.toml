@@ -45,6 +45,7 @@ members = [
   # 其它自己练习
   "other/browser_engin",
   "other/blockchain_rust",
-  "other/builder-lite"
+  "other/builder-lite",
+  "other/web_scraper"
 ]
-default-members = ["other/builder-lite"]
+default-members = ["other/web_scraper"]
