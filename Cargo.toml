@@ -46,6 +46,7 @@ members = [
   "other/browser_engin",
   "other/blockchain_rust",
   "other/builder-lite",
-  "other/web_scraper"
+  "other/web_scraper",
+  "other/share_ownership"
 ]
-default-members = ["other/web_scraper"]
+default-members = ["other/share_ownership"]
