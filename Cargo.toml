@@ -47,6 +47,7 @@ members = [
   "other/blockchain_rust",
   "other/builder-lite",
   "other/web_scraper",
-  "other/share_ownership"
+  "other/share_ownership",
+  "other/caches"
 ]
-default-members = ["other/share_ownership"]
+default-members = ["other/caches"]
