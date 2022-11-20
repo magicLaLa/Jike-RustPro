@@ -48,6 +48,7 @@ members = [
   "other/builder-lite",
   "other/web_scraper",
   "other/share_ownership",
-  "other/caches"
+  "other/caches",
+  "other/concurrent_example"
 ]
-default-members = ["other/caches"]
+default-members = ["other/concurrent_example"]
