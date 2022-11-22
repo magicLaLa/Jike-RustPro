@@ -1,0 +1,10 @@
+[
+  {
+    "title": "Rust Supports Async/Wait",
+    "summary": "Zero-cost async/await support has landed in Rust 1.39"
+  },
+  {
+    "title": "Tokio 1.0",
+    "summary": "Tokio 1.0 was released on December 22, 2020."
+  }
+]

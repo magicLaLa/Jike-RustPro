@@ -1156,6 +1156,10 @@ dependencies = [
 [[package]]
 name = "concurrent_example"
 version = "0.1.0"
+dependencies = [
+ "rayon",
+ "rocket",
+]
 
 [[package]]
 name = "console_error_panic_hook"
