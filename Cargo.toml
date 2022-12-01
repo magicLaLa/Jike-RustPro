@@ -49,6 +49,7 @@ members = [
   "other/web_scraper",
   "other/share_ownership",
   "other/caches",
-  "other/concurrent_example"
+  "other/concurrent_example",
+  "other/mandelbrot"
 ]
-default-members = ["other/concurrent_example"]
+default-members = ["other/mandelbrot"]
